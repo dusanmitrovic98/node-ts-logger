@@ -36,4 +36,8 @@ enum Color {
   BrightOrange = "\x1b[38;5;214m",
 }
 
+export function color(message: string, color: Color): string {
+  return `${color}${message}${Color.Reset}`;
+}
+
 export default Color;
