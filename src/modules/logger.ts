@@ -1,18 +1,24 @@
 import fs from "fs";
 
+import Timestamp from "../date-and-time/timestamp.js";
 import LogType from "./log-type.js";
 import Color from "./color.js";
-import formatTimestamp from "../utility/date-and-time/format-timestamp.js";
 
-export class Logger {
-  private logFilePath: string;
+class Logger {
+  private logDirectoryPath: string;
+  private logFileName: string;
   private logToFile: boolean;
   private colorLog: string;
   private colorWarning: string;
   private colorError: string;
 
-  constructor(logFilePath?: string, logToFile?: boolean) {
-    this.logFilePath = logFilePath || "./log.txt";
+  constructor(
+    logDirectoryPath?: string,
+    logFileName?: string,
+    logToFile?: boolean
+  ) {
+    this.logDirectoryPath = logDirectoryPath || "./";
+    this.logFileName = logFileName || "./log.txt";
     this.logToFile = logToFile || false;
     this.colorLog = Color.Blue;
     this.colorWarning = Color.Orange;
@@ -49,15 +55,10 @@ export class Logger {
     this.writeLogToFile(messages.fileLogMessage);
   }
 
-  private getCurrentTimestamp(): string {
-    const now = new Date();
-    return now.toISOString();
-  }
-
   private formatLogMessage(type: LogType, message: string): any {
-    const timestamp: string = this.getCurrentTimestamp();
-    const { date, time } = formatTimestamp(timestamp);
-    let logMessage: string = `[${date} || ${time}] [${type}] ${message}`;
+    const timestamp: string = Timestamp.getCurrentTimestamp();
+    const dateTime = Timestamp.getDateTime(timestamp);
+    let logMessage: string = `${dateTime} [${type}] ${message}`;
     let fileLogMessage: string = logMessage;
     let restOfMessage: string = logMessage + Color.Reset;
 
@@ -83,6 +84,28 @@ export class Logger {
       return;
     }
 
-    fs.appendFileSync(this.logFilePath, logMessage + "\n");
+    if (!fs.existsSync(this.logDirectoryPath)) {
+      fs.mkdirSync(this.logDirectoryPath, { recursive: true });
+    }
+
+    const fullFilePath = `${this.logDirectoryPath}/${this.logFileName}`;
+    console.log(fullFilePath);
+
+    if (!fs.existsSync(fullFilePath)) {
+      fs.writeFileSync(fullFilePath, "");
+    }
+
+    fs.appendFileSync(fullFilePath, logMessage + "\n");
   }
 }
+
+const timestamp: string = Timestamp.getCurrentTimestamp();
+const date: string = Timestamp.getDate(timestamp);
+const time: string = Timestamp.getTime(timestamp, "-");
+export const logger: Logger = new Logger(
+  "./logs",
+  `log-${date}-${time}.txt`,
+  true
+);
+
+export default Logger;
