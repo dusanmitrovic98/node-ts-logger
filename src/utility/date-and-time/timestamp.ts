@@ -65,13 +65,22 @@ class Timestamp {
     return date;
   }
 
-  public static getDateTime(timestamp: string): string {
+  public static getDateTime(
+    timestamp: string,
+    separator?: string,
+    prefix?: string,
+    suffix?: string
+  ): string {
     const date: string = this.getDate(timestamp);
     const time: string = this.getTime(timestamp);
-    let result: string = `[${date} || ${time}]`;
+    const separatorValue: string = separator || " || ";
+    const prefixValue: string = prefix || "[";
+    const suffixValue: string = suffix || "]";
+    const result: string = `${prefixValue}${date}${separatorValue}${time}${suffixValue}`;
 
     return result;
   }
 }
 
 export default Timestamp;
+
