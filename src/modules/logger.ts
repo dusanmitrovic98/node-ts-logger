@@ -1,8 +1,8 @@
 import fs from "fs";
 
-import Timestamp from "../date-and-time/timestamp.js";
 import LogType from "./log-type.js";
 import Color from "./color.js";
+import Timestamp from "../utility/timestamp/timestamp.js";
 
 class Logger {
   private logDirectoryPath: string;
